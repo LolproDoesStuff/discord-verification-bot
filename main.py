@@ -7,10 +7,10 @@ import os
 
 TOKEN = "(your bot token)"
 
-GUILD_ID = (your guild's ID)
-CHANNEL_ID = (your channel's ID)
-ROLE_ID = (your role's ID)
-PASSCODE = "(passcode)"
+GUILD_ID = "(your guild id)"
+CHANNEL_ID = "(your channel id)"
+ROLE_ID = "(your role id)"
+PASSCODE = "(your passcode)"
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -27,6 +27,8 @@ class PasscodeButton(Button):
         self.role = role
 
     async def callback(self, interaction: discord.Interaction):
+        print(f"Button clicked by {interaction.user} (ID: {interaction.user.id})")
+
         try:
             dm_channel = await interaction.user.create_dm()
             await dm_channel.send("Please enter the passcode:")
@@ -41,13 +43,17 @@ class PasscodeButton(Button):
                 member = guild.get_member(interaction.user.id)
                 if not member:
                     await dm_channel.send("❌ Could not find your member information in the server.")
+                    print(f"Failed to assign role to {interaction.user} - Member not found in guild.")
                     return
+
                 await member.add_roles(self.role)
                 await dm_channel.send("✅ Passcode correct, have a good stay in the server.")
+                print(f"✅ {interaction.user} successfully verified and assigned the role.")
             else:
                 await dm_channel.send("❌ Incorrect passcode. Restart the verification process.")
+                print(f"❌ {interaction.user} failed verification with incorrect passcode.")
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"Error processing verification for {interaction.user}: {e}")
             await interaction.response.send_message(
                 "❌ There was an error sending the DM. Please make sure that your DMs are open.",
                 ephemeral=True,
@@ -68,6 +74,7 @@ async def setup(ctx):
 
     if ctx.guild.id != GUILD_ID or ctx.channel.id != CHANNEL_ID:
         await ctx.send("nice try hehe.")
+        print(f"❌ Unauthorized setup attempt by {ctx.author} in guild {ctx.guild.id}, channel {ctx.channel.id}")
         return
 
     guild = ctx.guild
@@ -75,6 +82,7 @@ async def setup(ctx):
 
     if not role:
         await ctx.send("❌ Internal Error, contact the server admin. (Role not found)")
+        print(f"❌ Role with ID {ROLE_ID} not found in guild {ctx.guild.id}")
         return
 
     view = PersistentView(role)
@@ -86,7 +94,7 @@ async def setup(ctx):
     )
 
     await ctx.send(embed=embed, view=view)
-    print("Message sent successfully")
+    print("✅ Verification setup message sent successfully.")
 
 
 @bot.event
@@ -103,6 +111,7 @@ async def on_ready():
         role = guild.get_role(ROLE_ID)
         if role:
             bot.add_view(PersistentView(role))
+    print(f"Bot is ready and listening in Guild ID: {GUILD_ID}, Channel ID: {CHANNEL_ID}")
 
 
 bot.run(TOKEN)
