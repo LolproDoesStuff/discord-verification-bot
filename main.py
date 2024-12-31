@@ -5,12 +5,12 @@ from discord.ext import commands, tasks
 from discord.ui import Button, View
 import os
 
-TOKEN = (your bot token)
+TOKEN = "(your bot token)"
 
 GUILD_ID = (your guild's ID)
 CHANNEL_ID = (your channel's ID)
 ROLE_ID = (your role's ID)
-PASSCODE = (passcode)
+PASSCODE = "(passcode)"
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -43,7 +43,7 @@ class PasscodeButton(Button):
                     await dm_channel.send("❌ Could not find your member information in the server.")
                     return
                 await member.add_roles(self.role)
-                await dm_channel.send("✅Passcode correct, have a good stay in the server.")
+                await dm_channel.send("✅ Passcode correct, have a good stay in the server.")
             else:
                 await dm_channel.send("❌ Incorrect passcode. Restart the verification process.")
         except Exception as e:
