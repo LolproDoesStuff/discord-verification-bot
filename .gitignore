@@ -1,3 +1,8 @@
+# GitHub stuff
+LICENSE
+README.md
+files/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
